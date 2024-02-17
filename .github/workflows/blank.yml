@@ -1,0 +1,19 @@
+def compute_grade(average_score):
+    if average_score >= 80.0:
+        grade ="A"
+
+    elif average_score >= 60.0:
+        grade ="B"
+
+    elif average_score >= 50.0:
+        grade = "C"
+
+    else:
+        grade = "F"
+
+    return grade
+
+average_score= 66.0
+
+grade = compute_grade(average_score)
+print(grade)

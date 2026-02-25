@@ -81,6 +81,41 @@ describe('policy updates', () => {
   });
 
 
+  it('rejects malformed release channel values', async () => {
+    const malformedChannel = {
+      version: 'v160',
+      signature: 'ZmFrZQ==',
+      signatureAlgorithm: 'RSA-PSS-SHA256' as const,
+      keyId: 'vpu-root-2026',
+      keyChainLevel: 'online' as const,
+      dnsBlocklist: ['blocked.example'],
+      dnsAllowlist: ['allowed.example'],
+      providerRules: [],
+      generatedAt: '2026-01-01T00:00:00.000Z',
+      releaseChannel: 'prod' as unknown as 'stable',
+      rollbackFloorVersion: 'v159'
+    };
+
+    expect(await applyPolicyUpdate(malformedChannel)).toBe(false);
+  });
+
+  it('rejects payloads with missing provider rules', async () => {
+    const missingProviderRules = {
+      version: 'v161',
+      signature: 'ZmFrZQ==',
+      signatureAlgorithm: 'RSA-PSS-SHA256' as const,
+      keyId: 'vpu-root-2026',
+      keyChainLevel: 'online' as const,
+      dnsBlocklist: ['blocked.example'],
+      dnsAllowlist: ['allowed.example'],
+      providerRules: null,
+      generatedAt: '2026-01-01T00:00:00.000Z',
+      releaseChannel: 'stable' as const,
+      rollbackFloorVersion: 'v160'
+    } as unknown as Parameters<typeof applyPolicyUpdate>[0];
+
+    expect(await applyPolicyUpdate(missingProviderRules)).toBe(false);
+  });
 
   it('rejects stable channel updates below minimum channel version floor', async () => {
     const belowStableFloor = {

@@ -49,6 +49,21 @@ describe('observability backend', () => {
     expect(observabilityQueueDepth()).toBeLessThanOrEqual(5000);
   });
 
+
+
+  it('does not perform network send while backoff window is active', async () => {
+    const fetchMock = jest.fn(async () => ({ ok: false }));
+    (globalThis as unknown as { fetch?: unknown }).fetch = fetchMock;
+
+    const first = await pushObservabilityBatch([event(1)]);
+    const second = await pushObservabilityBatch([event(2)]);
+
+    expect(first).toBe(false);
+    expect(second).toBe(false);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(observabilityQueueDepth()).toBe(2);
+  });
+
   it('evaluates release gates by tunnel/crash/wakeup thresholds', () => {
     expect(
       evaluateReleaseGate({ crashes: 0, wakeups: 10, blockedDomains: 2, policyHits: 50, tunnelStatus: 'active' })

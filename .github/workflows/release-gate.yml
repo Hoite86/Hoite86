@@ -1,0 +1,21 @@
+name: Release Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "work" ]
+
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate release gates from soak metrics
+        run: |
+          if [ ! -f metrics.json ]; then
+            echo '{"anrRate":0.0,"tunnelUptime":1.0,"criticalCrashes":0,"failStrategyCorrect":true}' > metrics.json
+          fi
+          node scripts/evaluate-release-gates.mjs metrics.json

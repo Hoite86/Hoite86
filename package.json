@@ -6,9 +6,7 @@
   "scripts": {
     "start": "expo start",
     "test": "jest",
-    "release:gate": "node scripts/evaluate-release-gates.mjs metrics.json",
-    "release:gate:template": "node scripts/evaluate-release-gates.mjs metrics.template.json",
-    "release:gate:selftest": "node scripts/release-gate-selftest.mjs"
+    "release:gate": "node scripts/evaluate-release-gates.mjs metrics.json"
   },
   "dependencies": {
     "expo": "~51.0.0",

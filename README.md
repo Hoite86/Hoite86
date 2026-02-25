@@ -111,22 +111,13 @@ This repository contains an Android-focused React Native Virtual Private User (V
 - `src/services/policyUpdates.ts` — signed updates + version pinning + rollback controls.
 - `android/vpu-native/*` — native Android VPN module/service/scaffolding.
 - `scripts/evaluate-release-gates.mjs` — release gate automation.
-- `scripts/release-gate-selftest.mjs` — validator self-test for schema/threshold behavior.
-- `metrics.template.json` — required soak metrics schema template for CI gate artifacts.
 - `.github/workflows/release-gate.yml` — CI release gate workflow.
 - `docs.android-test-matrix.md` — reliability and platform validation matrix.
 - `docs/home-test-runs.md` — step-by-step home IDE/device validation checklist before alpha.
 
 ## Run
 
-```bash
-npm install
-npm test
-npm start
-npm run release:gate
-npm run release:gate:template
-npm run release:gate:selftest
-```
+WORK ON THIS
 
 ## Important production notes
 

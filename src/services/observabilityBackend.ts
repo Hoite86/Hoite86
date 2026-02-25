@@ -101,12 +101,3 @@ export const evaluateReleaseGate = (input: ReleaseGateInput): 'green' | 'yellow'
 };
 
 export const getReleaseGateStatus = (): 'green' | 'yellow' | 'red' => releaseGateStatus;
-
-
-export const resetObservabilityBackendForTests = (): void => {
-  queue = [];
-  retryAttempt = 0;
-  nextAllowedSendAt = 0;
-  releaseGateStatus = 'green';
-  backendEndpoint = DEFAULT_ENDPOINT;
-};

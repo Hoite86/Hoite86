@@ -1,0 +1,38 @@
+{
+  "name": "vpu-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "test": "jest",
+    "release:gate": "node scripts/evaluate-release-gates.mjs metrics.json",
+    "release:gate:template": "node scripts/evaluate-release-gates.mjs metrics.template.json",
+    "release:gate:selftest": "node scripts/release-gate-selftest.mjs"
+  },
+  "dependencies": {
+    "expo": "~51.0.0",
+    "expo-notifications": "~0.28.0",
+    "expo-secure-store": "~13.0.1",
+    "react": "18.2.0",
+    "react-native": "0.74.1",
+    "react-native-background-fetch": "^4.2.5",
+    "react-native-webview": "13.8.6",
+    "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/react": "^18.2.79",
+    "@types/react-native": "^0.73.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.4.5"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/tests"
+    ]
+  }
+}

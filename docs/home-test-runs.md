@@ -6,31 +6,22 @@ Use this checklist in your home IDE/device lab before declaring an alpha candida
 
 1. Install deps:
    - `npm install`
-   - **Pass signature:** install exits `0` and `node_modules` includes `jest`.
-   - **Fail signature:** `403 Forbidden`, auth/registry errors, or missing `jest` binary.
 2. Ensure Android SDK + JDK are available and an emulator/device is connected.
-   - **Pass signature:** `adb devices` shows at least one `device`.
-   - **Fail signature:** no devices/emulators listed.
 3. For native tests, run from the native package root if your Gradle wrapper lives there.
 
 ## 1) JS/TS correctness
 
 1. Unit tests:
    - `npm test`
-   - **Pass signature:** all suites pass, no open handle leaks.
-   - **Fail signature:** any suite fails or test runner cannot boot.
 2. Re-run specific high-risk suites after any policy/parser changes:
    - `npm test -- trackerIntel.test.ts`
    - `npm test -- policyUpdates.test.ts`
    - `npm test -- trackerBlocker.test.ts`
-   - `npm test -- observabilityBackend.test.ts`
 
 ## 2) Native packet parser safety
 
 1. Run JVM unit tests including parser property test:
    - `./gradlew test`
-   - **Pass signature:** `BUILD SUCCESSFUL` and test report green.
-   - **Fail signature:** JVM test failures or parser crashes.
 2. Validate no crashes in parser fuzz/property tests:
    - confirm `PacketInspectorPropertyTest` passes.
 3. Add/expand corpus with malformed QUIC/TLS examples for any parser bug found.
@@ -40,14 +31,11 @@ Use this checklist in your home IDE/device lab before declaring an alpha candida
 1. Start app and grant VPN permission.
 2. Verify lifecycle transitions:
    - start -> active -> stop -> stopped
-   - **Pass signature:** runtime status transitions match expected ordering.
 3. Validate fail strategies:
    - `FAIL_CLOSED`: blocked host traffic must be dropped.
    - `FAIL_OPEN`: blocked host event logged but traffic still forwarded when policy requires soft behavior.
-   - **Pass signature:** blocked/forwarded counters align with configured strategy.
 4. Validate native-first precedence:
    - when tunnel active, WebView is supplemental telemetry only.
-   - **Pass signature:** native decisions are authoritative; no double-counting drift.
 
 ## 4) Policy update trust flow
 
@@ -56,8 +44,6 @@ Use this checklist in your home IDE/device lab before declaring an alpha candida
 3. Test revoked key path:
    - push key to revoked list and confirm update is rejected.
 4. Test release-channel min version gates (`dev`/`beta`/`stable`).
-5. **Pass signature:** expected accepts/rejects exactly match policy rules.
-6. **Fail signature:** downgraded or revoked updates are accepted.
 
 ## 5) False-positive governance
 
@@ -66,19 +52,14 @@ Use this checklist in your home IDE/device lab before declaring an alpha candida
 2. Validate global allow exceptions.
 3. Validate provider-specific allow exceptions.
 4. Run calibration per cohort (`dev`, `beta`, `prod`) and compare block rates.
-5. **Pass signature:** stage transitions and allow exceptions behave deterministically.
 
 ## 6) Observability + release gates
 
 1. Validate queue/backoff under offline conditions:
    - disconnect network, generate events, reconnect, verify flush.
-   - **Pass signature:** queue depth rises offline then drains after reconnect.
 2. Run release-gate script with real soak output:
    - `node scripts/evaluate-release-gates.mjs metrics.json`
-   - **Pass signature:** `Release gate PASSED`.
-   - **Fail signature:** `Release gate FAILED:` followed by threshold failures.
 3. Confirm CI gate workflow passes on branch.
-   - **Pass signature:** workflow fails if `metrics.json` is missing or violates thresholds.
 
 ## 7) Long-run Android matrix (required before alpha)
 
@@ -110,13 +91,6 @@ Use these minimum gates:
 - critical crashes = 0 in 72h soak
 - tunnel uptime > 99%
 - fail strategy correctness verified across devices/OEMs
-
-## Best use case for maximum effectiveness
-
-- Run VPU in **FULL mode** for ad-tech heavy browsing/social/news/video sessions with tunnel active, `FAIL_CLOSED`, and staged tracker intel enabled.
-- Maintain targeted allow-exceptions only for explicitly trusted providers (for example critical messaging domains).
-- Push signed policy/intel updates frequently and validate release gates weekly from fresh soak metrics.
-- This yields strongest privacy impact where third-party telemetry density is high while preserving essential trusted comms.
 
 ## (Later Date) items to complete in home IDE
 

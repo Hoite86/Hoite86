@@ -117,12 +117,7 @@ This repository contains an Android-focused React Native Virtual Private User (V
 
 ## Run
 
-```bash
-npm install
-npm test
-npm start
-npm run release:gate
-```
+WORK ON THIS
 
 ## Important production notes
 

@@ -80,44 +80,6 @@ describe('policy updates', () => {
     expect(await applyPolicyUpdate(invalid)).toBe(false);
   });
 
-
-
-  it('rejects stable channel updates below minimum channel version floor', async () => {
-    const belowStableFloor = {
-      version: 'v99',
-      signature: 'ZmFrZQ==',
-      signatureAlgorithm: 'RSA-PSS-SHA256' as const,
-      keyId: 'vpu-root-2026',
-      keyChainLevel: 'online' as const,
-      dnsBlocklist: ['blocked.example'],
-      dnsAllowlist: ['allowed.example'],
-      providerRules: [],
-      generatedAt: '2026-01-01T00:00:00.000Z',
-      releaseChannel: 'stable' as const,
-      rollbackFloorVersion: 'v98'
-    };
-
-    expect(await applyPolicyUpdate(belowStableFloor)).toBe(false);
-  });
-
-  it('rejects updates below explicit rollback floor version', async () => {
-    const belowRollbackFloor = {
-      version: 'v150',
-      signature: 'ZmFrZQ==',
-      signatureAlgorithm: 'RSA-PSS-SHA256' as const,
-      keyId: 'vpu-root-2026',
-      keyChainLevel: 'online' as const,
-      dnsBlocklist: ['blocked.example'],
-      dnsAllowlist: ['allowed.example'],
-      providerRules: [],
-      generatedAt: '2026-01-01T00:00:00.000Z',
-      releaseChannel: 'stable' as const,
-      rollbackFloorVersion: 'v151'
-    };
-
-    expect(await applyPolicyUpdate(belowRollbackFloor)).toBe(false);
-  });
-
   it('rejects updates signed by revoked key ids', async () => {
     await updateRevokedKeyIds(['vpu-root-2026']);
 

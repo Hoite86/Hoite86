@@ -1,0 +1,22 @@
+name: Release Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "work" ]
+
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate release gates from soak metrics
+        run: |
+          if [ ! -f metrics.json ]; then
+            echo "Missing metrics.json. Upload soak-test metrics artifact before running release gate." >&2
+            exit 3
+          fi
+          node scripts/evaluate-release-gates.mjs metrics.json

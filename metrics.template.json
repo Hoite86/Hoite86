@@ -1,0 +1,9 @@
+{
+  "runId": "pixel8-android14-72h-2026-01-15",
+  "generatedAt": "2026-01-15T19:24:00.000Z",
+  "soakWindowHours": 72,
+  "anrRate": 0.0004,
+  "tunnelUptime": 0.996,
+  "criticalCrashes": 0,
+  "failStrategyCorrect": true
+}

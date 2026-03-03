@@ -1,0 +1,20 @@
+{
+  "hosting": {
+    "site": "YOUR_FIREBASE_HOSTING_SITE_ID",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "cmmc-mvp",
+          "region": "us-central1"
+        }
+      }
+    ]
+  }
+}

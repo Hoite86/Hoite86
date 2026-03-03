@@ -1,16 +1,14 @@
 import { z } from "zod";
 import { db } from "@/lib/firebase-admin";
-import { requireUserIdFromAuthHeader } from "@/lib/auth-server";
+import { AuthError, requireUserIdFromRequest } from "@/lib/auth-server";
 import { apiError } from "@/lib/api";
 
-const authHeaderSchema = z.string().startsWith("Bearer ");
 const paramsSchema = z.object({ id: z.string().min(1) });
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
-    authHeaderSchema.parse(req.headers.get("authorization") ?? "");
     const parsedParams = paramsSchema.parse(params);
-    const uid = await requireUserIdFromAuthHeader();
+    const uid = await requireUserIdFromRequest(req);
     const assessmentRef = db.collection("assessments").doc(parsedParams.id);
     const assessmentDoc = await assessmentRef.get();
 
@@ -28,7 +26,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       const data = doc.data();
       return {
         controlId: doc.id,
-        ...data,
+        answer: data.answer,
+        notes: data.notes,
         updatedAt: data.updatedAt?.toDate?.()?.toISOString() ?? new Date().toISOString(),
       };
     });
@@ -36,13 +35,21 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     return Response.json({
       assessment: {
         id: assessmentDoc.id,
-        ...assessment,
+        userId: assessment?.userId,
+        name: assessment?.name,
+        level: assessment?.level,
+        sprsScore: assessment?.sprsScore,
+        status: assessment?.status,
         createdAt: assessment?.createdAt?.toDate?.()?.toISOString() ?? new Date().toISOString(),
         updatedAt: assessment?.updatedAt?.toDate?.()?.toISOString() ?? new Date().toISOString(),
       },
       responses,
     });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return apiError(401, "Unauthorized");
+    }
+
     console.error("assessment details failed", error);
     return apiError(400, "Unable to fetch assessment");
   }

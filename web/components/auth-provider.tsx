@@ -18,12 +18,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (nextUser) => {
       setUser(nextUser);
-      if (nextUser) {
-        const token = await nextUser.getIdToken();
-        document.cookie = `firebaseToken=${token}; path=/; max-age=3600; samesite=lax`;
-      } else {
-        document.cookie = "firebaseToken=; path=/; max-age=0; samesite=lax";
-      }
       setLoading(false);
     });
     return unsub;

@@ -1,13 +1,32 @@
-import { headers } from "next/headers";
+import { z } from "zod";
 import { adminAuth } from "@/lib/firebase-admin";
 
-export async function requireUserIdFromAuthHeader(): Promise<string> {
-  const authHeader = headers().get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    throw new Error("Unauthorized");
+const authHeaderSchema = z.string().regex(/^Bearer\s+.+$/, "Missing Bearer token");
+
+export class AuthError extends Error {
+  constructor(message = "Unauthorized") {
+    super(message);
+    this.name = "AuthError";
+  }
+}
+
+export async function requireUserIdFromRequest(req: Request): Promise<string> {
+  const headerValue = req.headers.get("authorization");
+  const parsed = authHeaderSchema.safeParse(headerValue);
+
+  if (!parsed.success) {
+    throw new AuthError("Missing or invalid Authorization header");
   }
 
-  const token = authHeader.slice("Bearer ".length);
-  const decoded = await adminAuth.verifyIdToken(token);
-  return decoded.uid;
+  const token = parsed.data.replace(/^Bearer\s+/i, "").trim();
+  if (!token) {
+    throw new AuthError("Missing Bearer token");
+  }
+
+  try {
+    const decoded = await adminAuth.verifyIdToken(token, true);
+    return decoded.uid;
+  } catch {
+    throw new AuthError("Invalid auth token");
+  }
 }

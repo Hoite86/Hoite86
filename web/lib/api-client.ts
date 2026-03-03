@@ -9,8 +9,10 @@ export async function authedFetch(input: RequestInfo | URL, init?: RequestInit):
   }
 
   const token = await user.getIdToken();
+
   return fetch(input, {
     ...init,
+    credentials: "omit",
     headers: {
       "Content-Type": "application/json",
       ...init?.headers,

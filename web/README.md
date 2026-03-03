@@ -2,10 +2,11 @@
 
 ## Features
 - Firebase Auth (email/password + Google)
-- Protected dashboard and assessment routes
 - Assessment creation + response wizard over seeded controls
 - Firestore persistence through server-side API routes only
 - Live SPRS score calculation
+- Zod validation + Firebase ID token verification on API routes
+- Basic in-memory per-user throttling for response upserts
 - Cloud Run-ready Dockerfile
 
 ## Setup
@@ -41,4 +42,9 @@ gcloud run deploy cmmc-mvp --source . --region us-central1 --allow-unauthenticat
 - `GET /api/assessments/[id]`
 - `POST /api/assessments/[id]/responses`
 
-Each endpoint validates request payloads with Zod and verifies Firebase ID tokens server-side.
+## Security and hardening notes
+- API auth uses Firebase ID tokens in the `Authorization: Bearer <token>` header.
+- API client requests use `credentials: "omit"`, preventing cookie-based CSRF paths.
+- Firestore rules enforce ownership and validate key fields/types for `/users`, `/assessments`, and `/responses`.
+- App-level throttling is enabled for response upserts (`30` writes/minute/user in-memory).
+- For production scale, move rate limits to shared storage (Redis/Memorystore) so limits apply across Cloud Run instances.

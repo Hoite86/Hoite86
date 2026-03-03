@@ -1,25 +1,25 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const protectedRoutes = ["/dashboard", "/assessment"];
+const bearerPattern = /^Bearer\s+.+$/i;
 
 export function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
+  const { pathname } = request.nextUrl;
 
-  if (!isProtected) {
+  if (!pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get("firebaseToken")?.value;
-  if (!token) {
-    const loginUrl = new URL("/login", request.url);
-    return NextResponse.redirect(loginUrl);
+  if (pathname.startsWith("/api/assessments") || pathname.startsWith("/api/auth/sync-user")) {
+    const authorizationHeader = request.headers.get("authorization") ?? "";
+    if (!bearerPattern.test(authorizationHeader)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/assessment/:path*"],
+  matcher: ["/api/:path*"],
 };
